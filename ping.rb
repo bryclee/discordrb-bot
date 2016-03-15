@@ -11,7 +11,7 @@ FILENAME = 'list.txt'
 
 bot = Discordrb::Bot.new LOGIN, PASSWORD
 
-bot.message(with_text: /meow/i) do |event|
+bot.message(start_with: /meow/i) do |event|
 	punctuations = '.!?'
 	event << 'Meow' + punctuations[rand(punctuations.length)]
 end
