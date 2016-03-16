@@ -2,6 +2,7 @@
 
 require 'discordrb'
 require 'dotenv' # Load credentials to env with https://github.com/bkeepers/dotenv
+require './lib/misc'
 Dotenv.load
 
 LOGIN = ENV['LOGIN']
@@ -9,31 +10,31 @@ PASSWORD = ENV['PASSWORD']
 
 FILENAME = 'list.txt'
 
-bot = Discordrb::Bot.new LOGIN, PASSWORD
+bot = Discordrb::Bot.new LOGIN, PASSWORD # Configure Discord bot
+misc_commands = MiscCommands.new(log_message: true, respond_meow: true) # Configure misc commands to add to bot
 
-bot.message(start_with: /meow/i) do |event|
-	punctuations = '.!?'
-	event << 'Meow' + punctuations[rand(punctuations.length)]
-end
+misc_commands.add_to(bot) # Add commands to bot
 
-bot.message(with_text: /blee servers/) do |event|
+# Respond to these commands when bot receives a mention
+bot.mention(content: /<@.*> servers/) do |event|
 	servers = bot.servers.map do |key, server|
 		server.name
 	end
 	event.respond 'I see servers: ' + servers.join(", ")
 end
 
-bot.message(with_text: /blee channels/) do |event|
+bot.mention(contains: /<@.*> channels/) do |event|
 	channels = bot.servers.flat_map {|key, server| server.channels}
 	event.respond 'I see channels: ' + channels.map {|channel| channel.name}.join(', ')
 end
 
+# Testing writing to file, reading from file
 STORE_REGEX = /blee store (.*)/
 bot.message(with_text: STORE_REGEX) do |event|
 	f = open(FILENAME, 'a')
 	f.puts(STORE_REGEX.match(event.message.content)[1])
 	f.close()
-	event << 'Store:' + STORE_REGEX.match(event.message.content)[1]
+	event.respond 'Store:' + STORE_REGEX.match(event.message.content)[1]
 end
 
 bot.message(with_text: /blee read store/) do |event|
@@ -43,8 +44,8 @@ bot.message(with_text: /blee read store/) do |event|
 			data += line
 		end
 	end
-	event << 'Store contains:'
-	event << data
+	event.respond 'Store contains:'
+	event.respond data
 end
 
 bot.message(with_text: /blee clear store/) do |event|
@@ -57,4 +58,5 @@ bot.message(with_text: /blee clear store/) do |event|
 	end
 end
 
+# Run the bot
 bot.run
