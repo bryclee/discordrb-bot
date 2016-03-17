@@ -4,8 +4,8 @@ require 'discordrb'
 require 'dotenv' # Load credentials to env with https://github.com/bkeepers/dotenv
 Dotenv.load
 
-require './lib/misc'
-require './lib/status'
+require './lib/misc' # Import MiscCommands module
+require './lib/status' # Import StatusCommands module
 
 LOGIN = ENV['LOGIN']
 PASSWORD = ENV['PASSWORD']
@@ -13,14 +13,13 @@ PASSWORD = ENV['PASSWORD']
 FILENAME = 'list.txt'
 
 bot = Discordrb::Bot.new LOGIN, PASSWORD # Configure Discord bot
-# Configure commands to add to bot
-misc_commands = MiscCommands.new(log_message: true, respond_meow: true)
-status_commands = StatusCommands.new(respond_servers: true, respond_channels: true)
 
 # Add commands to bot
-misc_commands.add_to(bot)
-status_commands.add_to(bot)
+bot.message {|event| puts MiscCommands.log_message(event)}
+bot.message(start_with: /meow/i) {|event| event.respond MiscCommands.meow()}
 
+bot.mention(content: /<@.*> servers/) {|event| event.respond StatusCommands.get_servers(bot)}
+bot.mention(content: /<@.*> channels/) {|event| event.respond StatusCommands.get_channels(bot)}
 
 # Testing writing to file, reading from file
 STORE_REGEX = /blee store (.*)/

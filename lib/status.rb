@@ -1,28 +1,13 @@
-class StatusCommands
-    def initialize(respond_channels: false, respond_servers: false)
-        @respond_channels = respond_channels
-        @respond_servers = respond_servers
-    end
+module StatusCommands
+    extend self
     
-    def add_to(bot)
-        if @respond_servers
-            bot.mention(content: /<@.*> servers/) do |event|
-                event.respond get_servers(bot)
-            end
-        end
-        
-        if @respond_channels
-            bot.mention(content: /<@.*> channels/) do |event|
-                event.respond get_channels(bot)
-            end
-        end
+    # Return list of server names
+    def get_servers(bot)
+        bot.servers.map {|key, server| server.name}.join(', ')
     end
-end
 
-def get_servers(bot)
-    bot.servers.map {|key, server| server.name}.join(', ')
-end
-
-def get_channels(bot)
-	bot.servers.flat_map {|key, server| server.channels.map {|channel| channel.name}}.join(", ")
+    # Return list of channel names across all servers bot is in
+    def get_channels(bot)
+    	bot.servers.flat_map {|key, server| server.channels.map {|channel| channel.name}}.join(", ")
+    end
 end
