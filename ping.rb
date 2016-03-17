@@ -2,8 +2,10 @@
 
 require 'discordrb'
 require 'dotenv' # Load credentials to env with https://github.com/bkeepers/dotenv
-require './lib/misc'
 Dotenv.load
+
+require './lib/misc'
+require './lib/status'
 
 LOGIN = ENV['LOGIN']
 PASSWORD = ENV['PASSWORD']
@@ -11,22 +13,14 @@ PASSWORD = ENV['PASSWORD']
 FILENAME = 'list.txt'
 
 bot = Discordrb::Bot.new LOGIN, PASSWORD # Configure Discord bot
-misc_commands = MiscCommands.new(log_message: true, respond_meow: true) # Configure misc commands to add to bot
+# Configure commands to add to bot
+misc_commands = MiscCommands.new(log_message: true, respond_meow: true)
+status_commands = StatusCommands.new(respond_servers: true, respond_channels: true)
 
-misc_commands.add_to(bot) # Add commands to bot
+# Add commands to bot
+misc_commands.add_to(bot)
+status_commands.add_to(bot)
 
-# Respond to these commands when bot receives a mention
-bot.mention(content: /<@.*> servers/) do |event|
-	servers = bot.servers.map do |key, server|
-		server.name
-	end
-	event.respond 'I see servers: ' + servers.join(", ")
-end
-
-bot.mention(contains: /<@.*> channels/) do |event|
-	channels = bot.servers.flat_map {|key, server| server.channels}
-	event.respond 'I see channels: ' + channels.map {|channel| channel.name}.join(', ')
-end
 
 # Testing writing to file, reading from file
 STORE_REGEX = /blee store (.*)/
