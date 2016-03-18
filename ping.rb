@@ -6,11 +6,10 @@ Dotenv.load
 
 require './lib/misc' # Import MiscCommands module
 require './lib/status' # Import StatusCommands module
+require './lib/store' # Import StoreCommands module
 
 LOGIN = ENV['LOGIN']
 PASSWORD = ENV['PASSWORD']
-
-FILENAME = 'list.txt'
 
 bot = Discordrb::Bot.new LOGIN, PASSWORD # Configure Discord bot
 
@@ -24,32 +23,38 @@ bot.mention(content: /<@.*> channels/) {|event| event.respond StatusCommands.get
 # Testing writing to file, reading from file
 STORE_REGEX = /blee store (.*)/
 bot.message(with_text: STORE_REGEX) do |event|
-	f = open(FILENAME, 'a')
-	f.puts(STORE_REGEX.match(event.message.content)[1])
-	f.close()
-	event.respond 'Store:' + STORE_REGEX.match(event.message.content)[1]
+	message = STORE_REGEX.match(event.message.content)[1]
+	with_error_handling(event) do
+		StoreCommands.write(message)
+		event.respond "Stored: " + message
+	end
 end
 
 bot.message(with_text: /blee read store/) do |event|
-	data = ''
-	open(FILENAME, 'r') do |f|
-		f.each_line do |line|
-			data += line
-		end
+	with_error_handling(event) do
+		data = StoreCommands.read()
+		event.respond "Store contents:"
+		event.respond data
 	end
-	event.respond 'Store contains:'
-	event.respond data
 end
 
 bot.message(with_text: /blee clear store/) do |event|
-	begin # Try following actions, if something goes wrong go to rescue
-		File.delete(FILENAME)
-		event.respond 'Cleared store'
+	with_error_handling(event) do
+		StoreCommands.clear()
+		event.respond "Cleard store"
+	end
+end
+
+# Accepts a block, runs it and if an error occurs then returns the error
+def with_error_handling(event)
+	begin
+		yield
 	rescue => e
-		event.respond "Oops, couldn't clear store" # Using << doesn't cause bot to respond
+		event.respond "Had an error: " + e.class.to_s
 		raise e
 	end
 end
+	
 
 # Run the bot
 bot.run

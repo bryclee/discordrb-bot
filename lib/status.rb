@@ -1,5 +1,5 @@
 module StatusCommands
-    extend self
+    module_function # Make these functions available to the module
     
     # Return list of server names
     def get_servers(bot)

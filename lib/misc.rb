@@ -1,5 +1,5 @@
 module MiscCommands
-    extend self # Make these methods module functions. Could also use #module_function
+    module_function # Make these functions available to the module
     
     # Output the contents of the message to console
     def log_message(event)
