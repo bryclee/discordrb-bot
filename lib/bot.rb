@@ -4,9 +4,9 @@ require 'discordrb'
 require 'dotenv' # Load credentials to env with https://github.com/bkeepers/dotenv
 Dotenv.load
 
-require './lib/misc' # Import MiscCommands module
-require './lib/status' # Import StatusCommands module
-require './lib/store' # Import StoreCommands module
+require './lib/bot/misc' # Import MiscCommands module
+require './lib/bot/status' # Import StatusCommands module
+require './lib/bot/store' # Import StoreCommands module
 
 LOGIN = ENV['LOGIN']
 PASSWORD = ENV['PASSWORD']
