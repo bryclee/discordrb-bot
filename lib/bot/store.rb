@@ -34,8 +34,8 @@ module StoreCommands
     
     # Enable store functions for bot
     def enableStore(bot)
-        # Testing writing to file, reading from file
-        store_regex = /blee write store (.*)/
+        # blee write <string>: Save <string> into store
+        store_regex = /blee write (.*)/
         bot.message(with_text: store_regex) do |event|
         	message = store_regex.match(event.message.content)[1]
         	with_error_handling(event) do
@@ -44,7 +44,8 @@ module StoreCommands
     	    end
         end
 
-        bot.message(with_text: /blee read store/) do |event|
+        # blee read: Reply with the first 10 lines from the store
+        bot.message(with_text: /blee read/) do |event|
         	with_error_handling(event) do
         		data = StoreCommands.read()
         		if data.nil? || data.empty?
@@ -56,7 +57,8 @@ module StoreCommands
 	        end
         end
 
-        bot.message(with_text: /blee clear store/) do |event|
+        # blee clear: Clear the store file
+        bot.message(with_text: /blee clear/) do |event|
 	        with_error_handling(event) do
 		        StoreCommands.clear()
         		event.respond "Cleared store"

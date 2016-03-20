@@ -1,28 +1,19 @@
-# This simple bot responds to every "Ping!" message with a "Pong!"
+require './lib/bot/misc'
+require './lib/bot/status'
+require './lib/bot/store'
 
-require 'discordrb'
-require 'dotenv' # Load credentials to env with https://github.com/bkeepers/dotenv
-Dotenv.load
+class BleeBot < Discordrb::Bot
+    def initialize(login, password)
+        super
+        
+        # Add commands to bot
+        self.message {|event| puts MiscCommands.log_message(event)}
+        self.message(start_with: /meow/i) {|event| event.respond MiscCommands.meow()}
 
-require './lib/bot/misc' # Import MiscCommands module
-require './lib/bot/status' # Import StatusCommands module
-require './lib/bot/store' # Import StoreCommands module
-
-LOGIN = ENV['LOGIN']
-PASSWORD = ENV['PASSWORD']
-
-bot = Discordrb::Bot.new LOGIN, PASSWORD # Configure Discord bot
-
-# Add commands to bot
-bot.message {|event| puts MiscCommands.log_message(event)}
-bot.message(start_with: /meow/i) {|event| event.respond MiscCommands.meow()}
-
-bot.mention(content: /<@.*> servers/) {|event| event.respond StatusCommands.get_servers(bot)}
-bot.mention(content: /<@.*> channels/) {|event| event.respond StatusCommands.get_channels(bot)}
-
-# Turn on store commands
-StoreCommands.enableStore(bot)
-
-
-# Run the bot
-bot.run
+        self.mention(content: /<@.*> servers/) {|event| event.respond StatusCommands.get_servers(bot)}
+        self.mention(content: /<@.*> channels/) {|event| event.respond StatusCommands.get_channels(bot)}
+        
+        # Turn on store commands
+        StoreCommands.enableStore(self)
+    end
+end
