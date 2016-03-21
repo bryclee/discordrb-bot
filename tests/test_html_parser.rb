@@ -1,13 +1,7 @@
 require 'test/unit'
 require 'bot/html_parser'
 
-puts 1
-
 class HTMLParserSpec < Test::Unit::TestCase
-    
-    def test_true()
-        assert_equal 4, 4
-    end
     
     def test_selector()
         html = %{

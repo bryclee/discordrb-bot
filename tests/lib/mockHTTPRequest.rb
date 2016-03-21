@@ -27,12 +27,3 @@ class MockHTTPRequest < Net::HTTP
         @data
     end
 end
-
-mock = MockHTTPRequest.new()
-mock.mock('mock data')
-
-puts Net::HTTP.method(:get) # -> 'mock data'
-puts 'get:' + Net::HTTP.get(URI('www.somewhere.com'))
-mock.done()
-
-puts Net::HTTP.get(URI('http://www.hotslogs.com/Sitewide/HeroDetails?Hero=Nova')).length
