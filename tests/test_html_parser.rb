@@ -8,7 +8,6 @@ class HTMLParserSpec < Test::Unit::TestCase
             <body>
               <div>
                 <span>Hello</span>
-                <span class="something">Complex</span>
               </div>
             </body>
         }
@@ -17,7 +16,7 @@ class HTMLParserSpec < Test::Unit::TestCase
         
         span = parser.find_element(:span)
         
-        assert_equal span.html, "<span>Hello</span>"
+        assert_equal span.value, "Hello"
     end
     
 end

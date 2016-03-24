@@ -1,5 +1,5 @@
 require 'net/http'
-require './lib/bot/HTMLqueries.rb'
+require './lib/html_parser/html_parser.rb'
 
 class Query
     def initialize(uri, method = 'GET')
