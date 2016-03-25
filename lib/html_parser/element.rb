@@ -3,7 +3,8 @@ class Element
     attr_accessor :content
     attr_accessor :parent
     
-    def initialize(tag = nil, classes = "", content = nil)
+    def initialize(html)
+        match = /^<(?<tag>\w*)\s>$/ # finish me please sir
         @tag = tag
         @classlist = classes.split(" ")
         @content = content

@@ -1,5 +1,5 @@
 require 'test/unit'
-require 'bot/html_parser'
+require 'html_parser/html_parser'
 
 class HTMLParserSpec < Test::Unit::TestCase
     
