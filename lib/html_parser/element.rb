@@ -1,15 +1,32 @@
 class Element
-    attr_accessor :tag
     attr_accessor :content
-    attr_accessor :parent
+    attr_reader :tag
+    attr_reader :parent
+    attr_reader :id
+    attr_reader :children
     
     def initialize(html)
-        match = /^<(?<tag>\w*)\s>$/ # finish me please sir
-        @tag = tag
-        @classlist = classes.split(" ")
-        @content = content
+        match = /^<(?<tag>\w*).*>$/.match(html) # finish me please sir.
+        if match.nil?
+            raise Exception.new('Element tag not found')
+        end
+        
+        @tag = match[:tag]
+        @content = ""
         @parent = nil
         @children = []
+        @classes = []
+        @id = ""
+        
+        match_class = /class\="(?<class>[\w\s]*)"/.match(html)
+        match_id = /id\="(?<id>.*[^"])"/.match(html)
+        
+        if !match_class.nil?
+            @classes = match_class[:class].split(' ')
+        end
+        if !match_id.nil?
+            @id = match_id[:id]
+        end
     end
     
     def add(child)
@@ -18,5 +35,12 @@ class Element
         return child
     end
     
-    # TODO: class setters and getters
+    # Get/setters for element class
+    def classes
+        return @classes
+    end
+    
+    def has_class?(name)
+        return !@classes.index(name).nil?
+    end
 end
