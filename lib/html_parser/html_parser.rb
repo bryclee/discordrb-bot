@@ -2,24 +2,37 @@ require './lib/html_parser/element'
 
 class HTMLParser
     def initialize(html)
-        @html = parse_element(html)
+        @element = parse_element(html)
     end
     
     # Find element of type
     def find_element(type)
+        search_element = lambda do |element|
+            elements = []
+            
+            if element.tag == type
+                elements << element
+            end
+            
+            for child in element.children
+                elements.concat(search_element.call(child))
+            end
+            
+            return elements
+        end
         
+        search_element.call(@element)
     end
 end
 
 def parse_element(document_string)
     index = 0
+    current = nil
     
     while index < document_string.length
-        if !defined? current && document_string[0] != '<'
+        if current.nil? && document_string[0] != '<'
             raise Exception.new('Must start with an HTML element')
         end
-        
-        puts "char:#{document_string[index]}"
         
         if document_string[index] == '<'
             # If comment node (<!-- ) set index to end of comment
@@ -51,7 +64,11 @@ def parse_element(document_string)
                 end
                 offset = Regexp.last_match.offset(0)
                 element = Element.new(document_string[offset[0], offset[1] - offset[0]])
-                current.add(element)
+                if current.nil?
+                    current = element
+                else
+                    current.add(element)
+                end
                 current = element
                 index = offset[1]
             end

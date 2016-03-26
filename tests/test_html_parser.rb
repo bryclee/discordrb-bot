@@ -14,11 +14,12 @@ class HTMLParserSpec < Test::Unit::TestCase
         
         parser = HTMLParser.new(html)
         
-        span = parser.find_element(:span)
+        span = parser.find_element('span')
         
         puts 'I am the boogie man'
         puts parser
-        assert_equal span.content, "Hello"
+        puts span.class
+        assert_equal span[0].content, "Hello"
     end
     
 end

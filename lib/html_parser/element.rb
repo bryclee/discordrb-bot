@@ -1,7 +1,7 @@
 class Element
     attr_accessor :content
     attr_reader :tag
-    attr_reader :parent
+    attr_accessor :parent
     attr_reader :id
     attr_reader :children
     
