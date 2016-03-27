@@ -30,7 +30,6 @@ def parse_element(document_string)
     current = Element.new('document')
     
     while index < document_string.length
-        puts "#{index}: '#{document_string[index]}'"
         if current.nil? && document_string[0] != '<'
             raise Exception.new('Must start with an HTML element')
         end
@@ -64,7 +63,7 @@ def parse_element(document_string)
                     raise Exception.new('Incomplete HTML')
                 end
                 offset = Regexp.last_match.offset(0)
-                element = Element.new(document_string[offset[0], offset[1] - offset[0]])
+                element = Element.new.from_string(document_string[offset[0], offset[1] - offset[0]])
                 if current.nil?
                     current = element
                 else
@@ -80,7 +79,6 @@ def parse_element(document_string)
                 raise Exception.new("Incomplete HTML, no close tag for #{current.tag}")
             end
             next_bracket_position = Regexp.last_match.offset(0)
-            contents = document_string[index, next_bracket_position[0] - index].strip
             current.content << document_string[index, next_bracket_position[0] - index].strip
             index = next_bracket_position[0]
         end
