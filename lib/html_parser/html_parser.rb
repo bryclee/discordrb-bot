@@ -27,9 +27,10 @@ end
 
 def parse_element(document_string)
     index = 0
-    current = nil
+    current = Element.new('document')
     
     while index < document_string.length
+        puts "#{index}: '#{document_string[index]}'"
         if current.nil? && document_string[0] != '<'
             raise Exception.new('Must start with an HTML element')
         end
@@ -37,11 +38,11 @@ def parse_element(document_string)
         if document_string[index] == '<'
             # If comment node (<!-- ) set index to end of comment
             if document_string[index + 1] == '!'
-                close = document_string.index(/<\!\-\-.*?\-\->/, index)
+                close = document_string.index(/<\!\-\-.*?\-\->|<\!doctype.*?>/, index)
                 if close.nil?
                     raise Exception.new("Incomplete HTML, comment doesn't end")
                 end
-                index = Regexp.last_match(0)[1]
+                index = Regexp.last_match.offset(0)[1]
             # If close tag (</...>) then wrap up the current element
             elsif document_string[index + 1] == '/'
                 # set current to parent or return if no parent
@@ -79,7 +80,8 @@ def parse_element(document_string)
                 raise Exception.new("Incomplete HTML, no close tag for #{current.tag}")
             end
             next_bracket_position = Regexp.last_match.offset(0)
-            current.content << document_string[index, next_bracket_position[0] - index]
+            contents = document_string[index, next_bracket_position[0] - index].strip
+            current.content << document_string[index, next_bracket_position[0] - index].strip
             index = next_bracket_position[0]
         end
     end

@@ -5,20 +5,23 @@ class HTMLParserSpec < Test::Unit::TestCase
     
     def test_selector_simple_case()
         html = %{
-            <body>
-              <div>
-                <span>Hello</span>
-              </div>
-            </body>
+            <!doctype html>
+            <html>
+                <head>
+                    <title>Title here</title>
+                </head>
+                <body>
+                    <div>
+                        <span>Hello</span>
+                    </div>
+                </body>
+            </html>
         }.strip
         
         parser = HTMLParser.new(html)
         
         span = parser.find_element('span')
         
-        puts 'I am the boogie man'
-        puts parser
-        puts span.class
         assert_equal span[0].content, "Hello"
     end
     

@@ -5,18 +5,22 @@ class Element
     attr_reader :id
     attr_reader :children
     
-    def initialize(html)
-        match = /^<(?<tag>\w*).*>$/.match(html) # finish me please sir.
-        if match.nil?
-            raise Exception.new('Element tag not found')
-        end
-        
-        @tag = match[:tag]
+    def initialize(tag = nil)
+        @tag = tag
         @content = ""
         @parent = nil
         @children = []
         @classes = []
         @id = ""
+    end
+    
+    def from_string(html)
+        match_tag = /^<(?<tag>\w*).*>$/.match(html)
+        if match_tag.nil?
+            raise Exception.new('Element tag not found')
+        else
+            @tag = match_tag[:tag]
+        end
         
         match_class = /class\="(?<class>[\w\s]*)"/.match(html)
         match_id = /id\="(?<id>.*[^"])"/.match(html)
@@ -27,6 +31,8 @@ class Element
         if !match_id.nil?
             @id = match_id[:id]
         end
+        
+        self
     end
     
     def add(child)
