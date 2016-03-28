@@ -9,6 +9,10 @@ class HTMLParser
     def find_element(type)
         @element.find_element(type)
     end
+    
+    def apply_selector(selector)
+        
+    end
 end
 
 def parse_element(raw_string)
