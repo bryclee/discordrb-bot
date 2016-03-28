@@ -7,27 +7,14 @@ class HTMLParser
     
     # Find element of type
     def find_element(type)
-        search_element = lambda do |element|
-            elements = []
-            
-            if element.tag == type
-                elements << element
-            end
-            
-            for child in element.children
-                elements.concat(search_element.call(child))
-            end
-            
-            return elements
-        end
-        
-        search_element.call(@element)
+        @element.find_element(type)
     end
 end
 
-def parse_element(document_string)
+def parse_element(raw_string)
     index = 0
     current = Element.new('document')
+    document_string = raw_string.strip
     
     while index < document_string.length
         if current.nil? && document_string[0] != '<'
@@ -35,7 +22,7 @@ def parse_element(document_string)
         end
         
         if document_string[index] == '<'
-            # If comment node (<!-- ) set index to end of comment
+            # If comment node (<!-- ) or doctype set index to end of comment
             if document_string[index + 1] == '!'
                 close = document_string.index(/<\!\-\-.*?\-\->|<\!doctype.*?>/, index)
                 if close.nil?

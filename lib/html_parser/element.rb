@@ -43,10 +43,24 @@ class Element
     
     # Get/setters for element class
     def classes
-        return @classes
+        return @classes.clone
     end
     
     def has_class?(name)
         return !@classes.index(name).nil?
+    end
+    
+    def find_element(type)
+        elements = []
+        
+        if @tag == type
+            elements << self
+        end
+        
+        for child in @children
+            elements.concat(child.find_element(type))
+        end
+        
+        return elements
     end
 end
