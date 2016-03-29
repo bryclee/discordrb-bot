@@ -21,7 +21,7 @@ class HTMLParserSpec < Test::Unit::TestCase
                 </body>
             </html>
         }
-        @parser = HTMLParser.new(html)
+        @parser = HTMLParser.parse_HTML(html)
     end
     
     def test_selector_simple_case()
@@ -39,6 +39,8 @@ class HTMLParserSpec < Test::Unit::TestCase
     
     def test_selector_single()
         h1s = @parser.apply_selector('h1')
+        
+        assert_equal Array, h1s.class
         assert_equal 1, h1s.length
         assert_equal 'Hello', h1s[0].content
         

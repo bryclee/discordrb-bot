@@ -1,9 +1,10 @@
 class Element
     attr_accessor :content
-    attr_reader :tag
     attr_accessor :parent
+    attr_reader :tag
     attr_reader :id
     attr_reader :children
+    attr_reader :selector
     
     def initialize(tag = nil)
         @tag = tag
@@ -11,9 +12,12 @@ class Element
         @parent = nil
         @children = []
         @classes = []
-        @id = ""
+        @id = nil
     end
     
+    # Parse an html element opening tag (eg. <span class="..." id="...">) and
+    # get the tag, class, and id from it.
+    # Returns self.
     def from_string(html)
         match_tag = /^<(?<tag>\w*).*>$/.match(html)
         if match_tag.nil?
@@ -32,9 +36,10 @@ class Element
             @id = match_id[:id]
         end
         
-        self
+        return self
     end
     
+    # Add a child to element's children list
     def add(child)
         @children << child
         child.parent = self
@@ -50,6 +55,7 @@ class Element
         return !@classes.index(name).nil?
     end
     
+    # Search self and children for element with tag as type
     def find_element(type)
         elements = []
         
@@ -63,4 +69,24 @@ class Element
         
         return elements
     end
+        
+    # Return the selector string of Element instance only
+    def selector()
+        selector = @tag
+        if @classes.length
+            classes.each {|cls| selector << '.' << cls}
+        end
+        
+        unless @id.nil?
+            selector << '#' << @id
+        end
+        
+        return selector
+    end
+    
+    # Test element to see if it matches selector
+    def find_selector(selector)
+        
+    end
+
 end
