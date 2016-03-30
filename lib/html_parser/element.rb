@@ -27,7 +27,7 @@ class Element
         end
         
         match_class = /class\="(?<class>[\w\s]*)"/.match(html)
-        match_id = /id\="(?<id>.*[^"])"/.match(html)
+        match_id = /id\="(?<id>\w*[^"])"/.match(html)
         
         if !match_class.nil?
             @classes = match_class[:class].split(' ')
@@ -86,7 +86,7 @@ class Element
     
     # Test element to see if it matches selector
     def find_selector(selector)
-        
+        parts = /(?<parent>.+)\b(?<curr>\S*)$/
     end
 
 end
