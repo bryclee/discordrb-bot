@@ -37,7 +37,7 @@ class HTMLParserSpec < Test::Unit::TestCase
         assert_equal 2, spans.length
     end
     
-    def test_selector_single()
+    def skip_test_selector_single()
         h1s = @parser.apply_selector('h1')
         
         assert_equal Array, h1s.class

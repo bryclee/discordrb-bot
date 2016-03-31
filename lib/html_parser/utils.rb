@@ -1,21 +1,8 @@
 module HTMLUtils
     module_function
     
-    # Split a selector string into parents and current regexps
-    def parse_selector(selector_str)
-        parts = /(?<parent>.*)?(?:^|\s)(?<current>\S*)$/.match(selector_str)
-        regexps = Hash.new
-        
-        if parts['parent'] != ''
-            regexps['parent'] = selector_to_regex parts['parent']
-        end
-        
-        regexps['current'] = selector_to_regex parts['current']
-        
-        return regexps
-    end
-    
+    # Parse a selector as a string into a Regexp
     def selector_to_regex(str)
-        Regexp.new str.gsub('.', '\.')
+        Regexp.new(str.strip.gsub(' ', '(\b.*\s.*\b)') << '\z')
     end
 end
