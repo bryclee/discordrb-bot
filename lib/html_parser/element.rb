@@ -56,21 +56,6 @@ class Element
     def has_class?(name)
         return !@classes.index(name).nil?
     end
-    
-    # Search self and children for element with tag as type
-    def find_element(type)
-        elements = []
-        
-        if @tag == type
-            elements << self
-        end
-        
-        for child in @children
-            elements.concat(child.find_element(type))
-        end
-        
-        return elements
-    end
         
     # Return the selector string of Element instance only
     def selector()
@@ -101,6 +86,7 @@ class Element
         
         # Recursively search children and apply selector to each
         def test_element(element, parent_selector, test_regex, results)
+            
             curr_selector = parent_selector + " #{element.selector}"
             
             if test_regex =~ curr_selector

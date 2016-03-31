@@ -24,19 +24,6 @@ class HTMLParserSpec < Test::Unit::TestCase
         @parser = HTMLParser.parse_HTML(html)
     end
     
-    def test_selector_simple_case()
-        h1s = @parser.find_element('h1')
-        assert_equal h1s[0].content, "Hello"
-    end
-    
-    def test_selector_complex_case()
-        divs = @parser.find_element('div')
-        assert_equal 2, divs.length
-        
-        spans = divs.map {|div| div.find_element('span')}.flatten.to_set # Remove duplicates
-        assert_equal 2, spans.length
-    end
-    
     def test_selector_single()
         h1s = @parser.find_selector('h1')
         
@@ -55,5 +42,11 @@ class HTMLParserSpec < Test::Unit::TestCase
         nested_unique = @parser.find_selector('div.top #unique')
         assert_equal 1, nested_unique.length
         assert_equal 'Direct child selector', nested_unique[0].content
+        
+        misspelled = @parser.find_selector('di p')
+        assert_equal 0, misspelled.length, 'Should not select if not all requirements met'
+        
+        select_multiple = @parser.find_selector('div')
+        assert_equal 2, select_multiple.length, 'Should select more than one'
     end
 end

@@ -19,5 +19,9 @@ class HTMLUtilsSpec < Test::Unit::TestCase
         regex_long_parent = HTMLUtils.selector_to_regex 'div.ider span#dex'
         assert_match regex_long_parent, 'li.thium div.ider p#arent span#dex'
         assert_no_match regex_long_parent, 'div.ider#span#dex', 'Should not match without space between elements'
+        
+        regex_no_class = HTMLUtils.selector_to_regex 'div'
+        assert_match regex_no_class, 'div.class#bang'
+        assert_no_match regex_no_class, 'div.class span'
     end
 end
