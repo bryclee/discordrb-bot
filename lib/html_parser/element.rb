@@ -1,3 +1,5 @@
+import './lib/html_parser/utils'
+
 class Element
     attr_accessor :content
     attr_accessor :parent
@@ -72,7 +74,7 @@ class Element
         
     # Return the selector string of Element instance only
     def selector()
-        selector = @tag
+        selector = @tag.clone
         if @classes.length
             classes.each {|cls| selector << '.' << cls}
         end
@@ -84,9 +86,35 @@ class Element
         return selector
     end
     
-    # Test element to see if it matches selector
-    def find_selector(selector)
-        parts = /(?<parent>.+)\b(?<curr>\S*)$/
+    # Test element and children to see if it matches selector
+    def find_selector(sel_str)
+        res = []
+        
+        full_selector = self.selector
+        par = @parent
+        while par
+            full_selector << par.selector
+            par = par.parent
+        end
+        
+        test_regex = HTMLUtils.selector_to_regex sel_str
+        
+        # Recursively search children and apply selector to each
+        def test_element(element, parent_selector, test_regex, results)
+            curr_selector = parent_selector + " #{element.selector}"
+            
+            if test_regex =~ curr_selector
+                results.push element
+            end
+            
+            element.children.each do |child|
+                test_element(child, curr_selector, test_regex, results)
+            end
+        end
+        
+        test_element(self, full_selector, test_regex, res)
+        
+        return res
     end
 
 end

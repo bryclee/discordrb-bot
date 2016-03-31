@@ -37,19 +37,23 @@ class HTMLParserSpec < Test::Unit::TestCase
         assert_equal 2, spans.length
     end
     
-    def skip_test_selector_single()
-        h1s = @parser.apply_selector('h1')
+    def test_selector_single()
+        h1s = @parser.find_selector('h1')
         
         assert_equal Array, h1s.class
         assert_equal 1, h1s.length
         assert_equal 'Hello', h1s[0].content
         
-        classes = @parser.apply_selector('.deep')
+        classes = @parser.find_selector('.deep')
         assert_equal 1, classes.length
         assert_equal 'Deepest selector', classes[0].content
         
-        ids = @parser.apply_selector('#unique')
+        ids = @parser.find_selector('#unique')
         assert_equal 1, ids.length
         assert_equal 'Direct child selector', ids[0].content
+        
+        nested_unique = @parser.find_selector('div.top #unique')
+        assert_equal 1, nested_unique.length
+        assert_equal 'Direct child selector', nested_unique[0].content
     end
 end
