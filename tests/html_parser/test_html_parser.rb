@@ -24,7 +24,7 @@ class HTMLParserSpec < Test::Unit::TestCase
         @parser = HTMLParser.parse_HTML(html)
     end
     
-    def test_selector_single()
+    def test_selector()
         h1s = @parser.find_selector('h1')
         
         assert_equal Array, h1s.class
@@ -48,5 +48,8 @@ class HTMLParserSpec < Test::Unit::TestCase
         
         select_multiple = @parser.find_selector('div')
         assert_equal 2, select_multiple.length, 'Should select more than one'
+        
+        select_id = @parser.find_selector('span#deep')
+        assert_equal 1, select_id.length, 'Should select with tag and id'
     end
 end

@@ -1,15 +1,26 @@
-require 'net/http'
-require './lib/html_parser/html_parser.rb'
+# Add Hots scraper integration to Bot
+require './lib/hots/hots'
 
-class Query
-    def initialize(uri, method = 'GET')
-        @uri = URI(uri)
-    end
+module HotsCommands
+    module_function
     
-    def send()
-        @data = Net::HTTP.get(@uri)
+    def enable_hots(bot)
+        bot.message(with_text: /talents .*/) do |event|
+            message = event.message.content
+            match = /talents (?<hero>.*)/.match(message)
+            hero = match['hero']
+            
+            hero = (normalize_name(hero)).capitalize
+            query = HeroQuery.new(hero)
+            data_table = query.get_talent_data
+            
+            event.respond 'hi' + data_table.length.to_s
+        end
     end
 end
 
-hots = Query.new('http://www.hotslogs.com/Sitewide/HeroDetails?Hero=Nova')
-data = hots.send()
+def normalize_name(name)
+    {
+        'butcher' => 'the butcher'
+    }[name] || name
+end

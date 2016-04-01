@@ -11,7 +11,7 @@ class MockHTTPRequestSpec < Test::Unit::TestCase
         http_mock = MockHTTPRequest.new
         http_mock.mock(mock_data)
         
-        assert_equal mock_data, Net::HTTP.get(uri), 'should respond with mock data'
+        assert_equal mock_data, Net::HTTP.get(uri), 'should respond with mock data for GET'
         
         http_mock.done()
         

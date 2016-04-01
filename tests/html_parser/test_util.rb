@@ -14,7 +14,7 @@ class HTMLUtilsSpec < Test::Unit::TestCase
         
         regex_class = HTMLUtils.selector_to_regex 'div.class'
         assert_match regex_class, 'div.class', 'Should match div with class'
-        assert_no_match regex_class, 'div', 'Should not match div without class'
+        assert_no_match regex_class, 'divnclass', 'Should not match div without class'
         
         regex_long_parent = HTMLUtils.selector_to_regex 'div.ider span#dex'
         assert_match regex_long_parent, 'li.thium div.ider p#arent span#dex'
@@ -23,5 +23,8 @@ class HTMLUtilsSpec < Test::Unit::TestCase
         regex_no_class = HTMLUtils.selector_to_regex 'div'
         assert_match regex_no_class, 'div.class#bang'
         assert_no_match regex_no_class, 'div.class span'
+        
+        regex_tag_id = HTMLUtils.selector_to_regex 'span#id'
+        assert_match regex_tag_id, 'span.class#id'
     end
 end

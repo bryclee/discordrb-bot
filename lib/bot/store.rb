@@ -33,7 +33,7 @@ module StoreCommands
     end
     
     # Enable store functions for bot
-    def enableStore(bot)
+    def enable_store(bot)
         # blee write <string>: Save <string> into store
         store_regex = /blee write (.*)/
         bot.message(with_text: store_regex) do |event|

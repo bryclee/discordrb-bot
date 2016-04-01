@@ -1,4 +1,4 @@
-import './lib/html_parser/utils'
+require './lib/html_parser/utils'
 
 class Element
     attr_accessor :content
