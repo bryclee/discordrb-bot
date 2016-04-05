@@ -19,7 +19,20 @@ class HeroQuery
             self.send()
         end
         
+        f = open('raw', 'w')
+        f.puts(@data)
+        f.close()
+        
         data_element = HTMLParser.parse_HTML(@data)
+        
+        def read_children(el)
+            puts el.selector
+            el.children.each do |child|
+                puts child.to_s
+            end
+        end
+        read_children(data_element)
+        
         table = data_element.find_selector('table#ctl00_MainContent_RadGridHeroTalentStatistics_ctl00') # TODO: fix searching
     end
 end

@@ -1,4 +1,5 @@
 require './lib/html_parser/element'
+require './lib/html_parser/utils'
 
 module HTMLParser
     module_function
@@ -8,6 +9,7 @@ module HTMLParser
         index = 0
         current = Element.new('document')
         document_string = raw_string.strip
+        padding = ''
         
         while index < document_string.length
             if current.nil? && document_string[0] != '<'
@@ -19,7 +21,7 @@ module HTMLParser
                 if document_string[index + 1, 3] == '!--'
                     close = document_string.index(/<\!\-\-.*?\-\->|<\!doctype.*?>/, index)
                     if close.nil?
-                        puts document_string[index..-1]
+                        log document_string[index..-1]
                         raise "Incomplete HTML, comment doesn't end"
                     end
                     index = Regexp.last_match.offset(0)[1]
@@ -32,9 +34,10 @@ module HTMLParser
                     end
                     if current.parent.nil?
                         # End parsing string early if do not know what to do
-                        puts 'chutzpah? parent'
                         return current
                     else
+                        log "#{padding}#{current.parent.selector} < #{current.selector}"
+                        padding = padding[0...-1]
                         current = current.parent
                     end
                     index = Regexp.last_match.offset(0)[1]
@@ -42,11 +45,17 @@ module HTMLParser
                     # Must be a new element, create a new element as a child
                     close = document_string.index(/<.*?>/, index)
                     if (close.nil?)
-                        puts document_string[index..-1]
+                        log document_string[index..-1]
                         raise 'Incomplete HTML'
                     end
                     offset = Regexp.last_match.offset(0)
+                    
+                    str = document_string[offset[0], offset[1] - offset[0]]
                     element = Element.new.from_string(document_string[offset[0], offset[1] - offset[0]])
+                    
+                    log "#{padding}#{current.selector} > #{element.selector}"
+                    padding = padding + ' '
+                    
                     if current.nil?
                         current = element
                     else
@@ -67,7 +76,12 @@ module HTMLParser
             end
         end
         
+        log 'return end'
         return current
     end
 
+end
+
+def log(str)
+    HTMLUtils.log(str)
 end

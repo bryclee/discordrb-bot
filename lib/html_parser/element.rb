@@ -73,6 +73,7 @@ class Element
     
     # Test element and children to see if it matches selector
     def find_selector(sel_str)
+        HTMLUtils.log '========find selector============='
         res = []
         
         full_selector = self.selector
@@ -86,8 +87,8 @@ class Element
         
         # Recursively search children and apply selector to each
         def test_element(element, parent_selector, test_regex, results)
-            
             curr_selector = parent_selector + " #{element.selector}"
+            HTMLUtils.log curr_selector
             
             if test_regex =~ curr_selector
                 results.push element

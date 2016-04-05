@@ -24,6 +24,42 @@ class HTMLParserSpec < Test::Unit::TestCase
         @parser = HTMLParser.parse_HTML(html)
     end
     
+    def test_parser_self_closing_elements()
+        self_closing_html = %{
+            <head>
+                <link style="blah" />
+                <span>Should be sibling</span>
+            </head>
+        }
+        
+        parser = HTMLParser.parse_HTML(self_closing_html)
+        link = parser.find_selector('link')
+        
+        assert_equal 'link', link.tag
+        assert_equal 0, link.children.length
+    end
+    
+    def test_parser_script()
+        script_html = %{
+            <body>
+                <script type="text/javascript">
+                    if (3 < 5) {
+                        console.log('stuff');
+                    } else if (3 > 2) {
+                        console.log('other stuff');
+                    }
+                </script>
+                <div>Should be sibling</div>
+            </body
+        }
+        
+        parser = HTMLParser.parse_HTML(script_html)
+        script = parser.find_selector('script')
+        
+        assert_equal 'script', script.tag
+        assert_equal 0, script.children
+    end
+    
     def test_selector()
         h1s = @parser.find_selector('h1')
         
