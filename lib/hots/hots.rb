@@ -28,11 +28,14 @@ class HeroQuery
         def read_children(el)
             puts el.selector
             el.children.each do |child|
-                puts child.to_s
+                read_children(child)
             end
         end
-        read_children(data_element)
         
         table = data_element.find_selector('table#ctl00_MainContent_RadGridHeroTalentStatistics_ctl00') # TODO: fix searching
+        
+        read_children(data_element)
+        
+        return table
     end
 end

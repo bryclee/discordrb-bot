@@ -17,8 +17,12 @@ module HTMLParser
             end
             
             if document_string[index] == '<'
+                # For script elements, ignore any < brackets if it isn't a close tag for the script
+                if current.tag == 'script' and /<\/script>/ !~ document_string[index, 9]
+                    current.content << document_string[index]
+                    index += 1
                 # If comment node (<!-- ) or doctype set index to end of comment
-                if document_string[index + 1, 3] == '!--'
+                elsif document_string[index + 1, 3] == '!--'
                     close = document_string.index(/<\!\-\-.*?\-\->|<\!doctype.*?>/, index)
                     if close.nil?
                         log document_string[index..-1]
@@ -50,18 +54,21 @@ module HTMLParser
                     end
                     offset = Regexp.last_match.offset(0)
                     
-                    str = document_string[offset[0], offset[1] - offset[0]]
-                    element = Element.new.from_string(document_string[offset[0], offset[1] - offset[0]])
-                    
-                    log "#{padding}#{current.selector} > #{element.selector}"
-                    padding = padding + ' '
+                    el_str = document_string[offset[0], offset[1] - offset[0]]
+                    element = Element.new.from_string(el_str)
                     
                     if current.nil?
                         current = element
                     else
                         current.add(element)
                     end
-                    current = element
+                    if el_str[-2] != '/'
+                        log "#{padding}#{current.selector} > #{element.selector}" # LOGGING
+                        padding = padding + ' ' # LOGGING
+                        current = element
+                    else
+                        log "#{padding}#{current.selector} - #{element.selector}" # PURELY LOGGING
+                    end
                     index = offset[1]
                 end
             else

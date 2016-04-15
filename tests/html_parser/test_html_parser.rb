@@ -33,31 +33,32 @@ class HTMLParserSpec < Test::Unit::TestCase
         }
         
         parser = HTMLParser.parse_HTML(self_closing_html)
-        link = parser.find_selector('link')
+        link = parser.find_selector('link')[0]
         
         assert_equal 'link', link.tag
         assert_equal 0, link.children.length
     end
     
-    def test_parser_script()
+    def test_parser_scripts()
         script_html = %{
             <body>
                 <script type="text/javascript">
                     if (3 < 5) {
-                        console.log('stuff');
+                        console.log('should');
                     } else if (3 > 2) {
-                        console.log('other stuff');
+                        console.log('parse this out');
                     }
+                    even_here('<>')
                 </script>
                 <div>Should be sibling</div>
-            </body
+            </body>
         }
         
         parser = HTMLParser.parse_HTML(script_html)
-        script = parser.find_selector('script')
+        script = parser.find_selector('script')[0]
         
         assert_equal 'script', script.tag
-        assert_equal 0, script.children
+        assert_equal 0, script.children.length
     end
     
     def test_selector()
