@@ -28,6 +28,7 @@ class HTMLParserSpec < Test::Unit::TestCase
         self_closing_html = %{
             <head>
                 <link style="blah" />
+                <img stuff="blah" />
                 <span>Should be sibling</span>
             </head>
         }
@@ -37,6 +38,27 @@ class HTMLParserSpec < Test::Unit::TestCase
         
         assert_equal 'link', link.tag
         assert_equal 0, link.children.length
+        
+        img = parser.find_selector('img')[0]
+        
+        assert_equal 'img', img.tag
+        assert_equal 0, img.children.length
+        
+        head = parser.find_selector('head')[0]
+        
+        assert_equal 3, head.children.length, 'Head should have 3 sibling children'
+    end
+    
+    def test_parser_quotes()
+        bracket_in_quotes = %{
+            <span attr="something something tag >">Content</span>
+        }
+        
+        parser = HTMLParser.parse_HTML(bracket_in_quotes)
+        span = parser.find_selector('span')
+        
+        assert_equal 1, span.length
+        assert_equal 'Content', span[0].content
     end
     
     def test_parser_scripts()
@@ -60,6 +82,50 @@ class HTMLParserSpec < Test::Unit::TestCase
         assert_equal 'script', script.tag
         assert_equal 0, script.children.length
     end
+    
+    def test_parser_random_close()
+        close_html = %{
+            <div>
+                <span>Content and </nothing> here</span>
+                <table>Checking</something></table>
+            </div>
+        }
+        
+        parser = HTMLParser.parse_HTML(close_html)
+        span = parser.find_selector('span')
+        div = parser.find_selector('div')
+        table = parser.find_selector('table')
+        
+        assert_equal "Content and</nothing> here", span[0].content
+        assert_equal "Checking</something>", table[0].content
+        
+        assert_equal "", div[0].content
+    end
+    
+    def test_adjactent_tags()
+        adjacent_tags = %{
+            <a><p>Hello</p></a>
+        }
+        
+        parser = HTMLParser.parse_HTML(adjacent_tags)
+        p = parser.find_selector('p')
+        
+        assert_equal "Hello", p[0].content
+    end
+    
+    def test_empty_tags()
+        img_tag = %{
+            <div>
+                <img src="look ma no hands">
+            </div>
+        }
+        
+        parser = HTMLParser.parse_HTML(img_tag)
+        img = parser.find_selector('img')
+        
+        assert_equal 1, img.length
+    end
+    
     
     def test_selector()
         h1s = @parser.find_selector('h1')

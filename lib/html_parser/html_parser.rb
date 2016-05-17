@@ -1,6 +1,11 @@
 require './lib/html_parser/element'
 require './lib/html_parser/utils'
 
+EMPTY_TAGS = {
+    "img" => true,
+    "br" => true
+}
+
 module HTMLParser
     module_function
     
@@ -25,31 +30,37 @@ module HTMLParser
                 elsif document_string[index + 1, 3] == '!--'
                     close = document_string.index(/<\!\-\-.*?\-\->|<\!doctype.*?>/, index)
                     if close.nil?
-                        log document_string[index..-1]
+                        log document_string[index..-1] # See selectors
                         raise "Incomplete HTML, comment doesn't end"
                     end
                     index = Regexp.last_match.offset(0)[1]
                 # If close tag (</...>) then wrap up the current element
                 elsif document_string[index + 1] == '/'
                     # set current to parent or return if no parent
-                    close = document_string.index(/<\/.*?>/, index)
+                    close = document_string.match(/<\/([^\s>]*).*?>/, index)
                     if (close.nil?)
                         raise "Incomplete HTML, close tag for #{current.tag} doesn't end"
                     end
                     if current.parent.nil?
                         # End parsing string early if do not know what to do
                         return current
-                    else
-                        log "#{padding}#{current.parent.selector} < #{current.selector}"
+                    elsif close[1] == current.tag
+                        log "#{padding}#{current.parent.selector} < #{current.selector} #{document_string[index, 10]}" # See selectors
                         padding = padding[0...-1]
                         current = current.parent
+                        index = Regexp.last_match.offset(0)[1]
+                    else
+                        log "Not close, writing content #{document_string[index, 10]}"
+                        current.content << document_string[index]
+                        index += 1
                     end
-                    index = Regexp.last_match.offset(0)[1]
+                    
                 else
                     # Must be a new element, create a new element as a child
-                    close = document_string.index(/<.*?>/, index)
+                      # Match must be within closed double quotes
+                    close = document_string.index(/<(?:[^"]|"[^"]*")*?>/, index)
                     if (close.nil?)
-                        log document_string[index..-1]
+                        log document_string[index..-1] # See selectors
                         raise 'Incomplete HTML'
                     end
                     offset = Regexp.last_match.offset(0)
@@ -62,12 +73,12 @@ module HTMLParser
                     else
                         current.add(element)
                     end
-                    if el_str[-2] != '/'
-                        log "#{padding}#{current.selector} > #{element.selector}" # LOGGING
+                    if el_str[-2] == '/' || EMPTY_TAGS.key?(element.tag)
+                        log "#{padding}#{current.selector} - #{element.selector} #{document_string[index, 10]}" # PURELY LOGGING
+                    else
+                        log "#{padding}#{current.selector} > #{element.selector} #{document_string[index, 10]}" # LOGGING
                         padding = padding + ' ' # LOGGING
                         current = element
-                    else
-                        log "#{padding}#{current.selector} - #{element.selector}" # PURELY LOGGING
                     end
                     index = offset[1]
                 end
@@ -83,12 +94,13 @@ module HTMLParser
             end
         end
         
-        log 'return end'
+        # log 'return end'
         return current
     end
 
 end
 
+# For logging/debugging
 def log(str)
-    HTMLUtils.log(str)
+    # HTMLUtils.log(str)
 end

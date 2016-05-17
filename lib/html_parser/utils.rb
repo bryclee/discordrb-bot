@@ -9,7 +9,16 @@ module HTMLUtils
     end
     
     def log(str)
+        puts str
         @log_file.puts(str)
+    end
+    
+    # Print an element
+    def print_el(el, padding = '')
+        self.log "#{padding}|#{el.selector}|#{el.content}"
+        el.children.each do |child|
+            print_el(child, padding + '*')
+        end
     end
 end
 

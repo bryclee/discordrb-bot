@@ -12,6 +12,7 @@ module HotsCommands
             
             hero = (normalize_name(hero)).capitalize
             query = HeroQuery.new(hero)
+
             data_table = query.get_talent_data
 
             event.respond 'hi' + data_table.length.to_s
@@ -21,6 +22,6 @@ end
 
 def normalize_name(name)
     {
-        'butcher' => 'the butcher'
+        'butcher' => 'The Butcher'
     }[name] || name
 end

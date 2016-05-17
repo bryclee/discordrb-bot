@@ -1,5 +1,6 @@
 require 'net/http'
-require './lib/html_parser/html_parser.rb'
+require './lib/html_parser/html_parser'
+require './lib/html_parser/utils'
 
 class HeroQuery
     def initialize(hero)
@@ -25,17 +26,9 @@ class HeroQuery
         
         data_element = HTMLParser.parse_HTML(@data)
         
-        def read_children(el)
-            puts el.selector
-            el.children.each do |child|
-                read_children(child)
-            end
-        end
+        talent_table = data_element.find_selector('table#ctl00_MainContent_RadGridHeroTalentStatistics_ctl00') # TODO: fix searching
         
-        table = data_element.find_selector('table#ctl00_MainContent_RadGridHeroTalentStatistics_ctl00') # TODO: fix searching
-        
-        read_children(data_element)
-        
-        return table
+        HTMLUtils.print_el(talent_table[0])
+        return talent_table
     end
 end
