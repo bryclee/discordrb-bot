@@ -13,9 +13,12 @@ module HotsCommands
             hero = (normalize_name(hero)).capitalize
             query = HeroQuery.new(hero)
 
-            data_table = query.get_talent_data
+            results = query.get_talent_data_by_level
 
-            event.respond 'hi' + data_table.length.to_s
+            event.respond('fi')
+            # results.each do |row|
+            #     event.respond "fo"
+            # end
         end
     end
 end

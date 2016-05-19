@@ -8,7 +8,7 @@ class BleeBot < Discordrb::Bot
         super
         
         # Add commands to bot
-        # self.message {|event| puts MiscCommands.log_message(event)}
+        self.message {|event| puts MiscCommands.log_message(event)}
         self.message(start_with: /meow/i) {|event| event.respond MiscCommands.meow()}
 
         self.mention(content: /<@.*> servers/) {|event| event.respond StatusCommands.get_servers(bot)}
