@@ -6,9 +6,8 @@ COLUMN_NAMES = [
     'TalentTier',
     'Talent',
     'Talent Description',
-    'Games Played',
-    'Popularity',
-    'Win Percent'
+    'Win Percent',
+    'Games Played'
 ]
 GROUP_BY = 'TalentTier'
 NEWLINE = "\r\n"
@@ -91,8 +90,24 @@ class HeroQuery
         return grouped_talents
     end
     
+    def get_top_talent_data_by_level()
+        talents = self.get_talent_data()
+        
+        top = 'Win Percent'
+        
+        top_talents = talents.each_with_object(Hash.new {|hash, key| hash[key] = {}}) do |row, memo|
+            if memo[row[GROUP_BY]][top].nil? || row[top] > memo[row[GROUP_BY]][top]
+                memo[row[GROUP_BY]] = row
+            end
+        end
+        
+        return top_talents.each do |key, val|
+            top_talents[key] = self.format_talent_string(val)
+        end
+    end
+    
     def format_talent_string(talent_info)
-        COLUMN_NAMES.map {|name| talent_info[name]}.join(' - ')
+        COLUMN_NAMES.map {|name| talent_info[name]}.join('** - ')
     end
     
     def join_message(arr)

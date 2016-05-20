@@ -9,7 +9,6 @@ module HTMLUtils
     end
     
     def log(str)
-        puts str
         @log_file.puts(str)
     end
     

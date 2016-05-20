@@ -17,6 +17,7 @@ module HTMLParser
         padding = ''
         
         while index < document_string.length
+            log "#{index}:#{document_string[index, 10]}"
             if current.nil? && document_string[0] != '<'
                 raise 'Must start with an HTML element'
             end
@@ -43,7 +44,8 @@ module HTMLParser
                     end
                     if current.parent.nil?
                         # End parsing string early if do not know what to do
-                        return current
+                        puts "Ending parsing early"
+                        break current
                     elsif close[1] == current.tag
                         log "#{padding}#{current.parent.selector} < #{current.selector} #{document_string[index, 10]}" # See selectors
                         padding = padding[0...-1]
@@ -94,7 +96,7 @@ module HTMLParser
             end
         end
         
-        # log 'return end'
+        puts 'return end'
         return current
     end
 
@@ -102,5 +104,5 @@ end
 
 # For logging/debugging
 def log(str)
-    # HTMLUtils.log(str)
+    HTMLUtils.log(str)
 end
